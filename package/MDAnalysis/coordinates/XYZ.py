@@ -81,20 +81,23 @@ Classes
 -------
 
 """
-import itertools
-import os
 import errno
-import numpy as np
-import warnings
+import itertools
 import logging
+import os
+import warnings
+
+import numpy as np
+from ase.geometry.cell import cellpar_to_cell
+
 logger = logging.getLogger('MDAnalysis.coordinates.XYZ')
 
-from . import base
-from .timestep import Timestep
+from ..exceptions import NoDataError
 from ..lib import util
 from ..lib.util import cached, store_init_arguments
-from ..exceptions import NoDataError
 from ..version import __version__
+from . import base
+from .timestep import Timestep
 
 
 class XYZWriter(base.WriterBase):
@@ -236,6 +239,9 @@ class XYZWriter(base.WriterBase):
                 else:
                     # Only populate a time step with the selected atoms.
                     ts = ts_full.copy_slice(atoms.indices)
+                if ts.dimensions is not None:
+                    cell = cellpar_to_cell(ts.dimensions).flatten()
+                    self.remark = 'Lattice="%s" pbc"T T T"' % np.array2string(cell, max_line_width=500)[1:-1]
             elif hasattr(obj, 'trajectory'):
                 # For Universe only --- get everything
                 ts = obj.trajectory.ts
