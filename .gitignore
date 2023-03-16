@@ -51,3 +51,7 @@ benchmarks/results
 .idea
 .vscode
 *.lock
+
+.history
+*.cpp
+*.c
