@@ -55,3 +55,9 @@ benchmarks/results
 .history
 *.cpp
 *.c
+
+*.xyz
+*.wfn*
+*.cube
+*.pdos
+*.lammpstrj
