@@ -485,7 +485,10 @@ class DumpReader(base.ReaderBase):
         "unscaled": ["x", "y", "z"],
         "scaled": ["xs", "ys", "zs"],
         "unwrapped": ["xu", "yu", "zu"],
-        "scaled_unwrapped": ["xsu", "ysu", "zsu"]
+        "scaled_unwrapped": ["xsu", "ysu", "zsu"],
+        "force": ["fx", "fy", "fz"],
+        "velocity": ["vx", "vy", "vz"],
+        "charge": ["q"]
     }
 
     @store_init_arguments
@@ -623,6 +626,13 @@ class DumpReader(base.ReaderBase):
             raise ValueError(f"No coordinates following convention {self.lammps_coordinate_convention} found in timestep")
 
         coord_cols = convention_to_col_ix[self.lammps_coordinate_convention]
+        
+        if "force" in convention_to_col_ix:
+            ts.has_forces = True
+            f_cols = convention_to_col_ix["force"] 
+        if "velocity" in convention_to_col_ix:
+            ts.has_velocities = True
+            v_cols = convention_to_col_ix["velocity"] 
 
         ids = "id" in attr_to_col_ix
         for i in range(self.n_atoms):
@@ -630,6 +640,10 @@ class DumpReader(base.ReaderBase):
             if ids:
                 indices[i] = fields[attr_to_col_ix["id"]]
             ts.positions[i] = [fields[dim] for dim in coord_cols]
+            if ts.has_forces:
+                ts.forces[i] = [fields[dim] for dim in f_cols]
+            if ts.has_velocities:
+                ts.velocities[i] = [fields[dim] for dim in v_cols]
 
         order = np.argsort(indices)
         ts.positions = ts.positions[order]
