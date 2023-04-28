@@ -98,7 +98,7 @@ class XYZParser(TopologyReaderBase):
         masses = guessers.guess_masses(names)
 
         # set charges
-        ase_atoms = io.read(self.filename, format="xyz")
+        ase_atoms = io.read(self.filename, format="extxyz")
         charges = ase_atoms.get_initial_charges()
 
         attrs = [Atomnames(names),
