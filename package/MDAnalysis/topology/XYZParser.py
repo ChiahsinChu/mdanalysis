@@ -39,6 +39,7 @@ Classes
 
 """
 import numpy as np
+from ase import io
 
 from . import guessers
 from ..lib.util import openany
@@ -53,6 +54,7 @@ from ..core.topologyattrs import (
     Resnums,
     Segids,
     Elements,
+    Charges,
 )
 
 
@@ -95,6 +97,10 @@ class XYZParser(TopologyReaderBase):
         atomtypes = guessers.guess_types(names)
         masses = guessers.guess_masses(names)
 
+        # set charges
+        ase_atoms = io.read(self.filename, format="xyz")
+        charges = ase_atoms.get_initial_charges()
+
         attrs = [Atomnames(names),
                  Atomids(np.arange(natoms) + 1),
                  Atomtypes(atomtypes, guessed=True),
@@ -102,7 +108,8 @@ class XYZParser(TopologyReaderBase):
                  Resids(np.array([1])),
                  Resnums(np.array([1])),
                  Segids(np.array(['SYSTEM'], dtype=object)),
-                 Elements(names)]
+                 Elements(names), 
+                 Charges(charges)]
 
         top = Topology(natoms, 1, 1,
                        attrs=attrs)
