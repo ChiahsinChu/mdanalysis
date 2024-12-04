@@ -171,6 +171,8 @@ class XYZWriter(base.WriterBase):
         precision: int (optional)
             set precision of saved trjactory to this number of decimal places.
 
+            .. versionadded:: 2.9.0
+
 
         .. versionchanged:: 1.0.0
            Removed :code:`default_remark` variable (Issue #2692).
