@@ -21,7 +21,7 @@ The rules for this file:
 Fixes
 
 Enhancements
-  * Added `precision` for XYZWriter (Iusse #4775, PR #4771)
+  * Added `precision` for XYZWriter (Issue #4775, PR #4771)
 
 Changes
 
