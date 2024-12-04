@@ -21,6 +21,7 @@ The rules for this file:
 Fixes
 
 Enhancements
+  * Added `precision` for XYZWriter (Iusse #4775, PR #4771)
 
 Changes
 
@@ -79,7 +80,6 @@ Fixes
  * Fix groups.py doctests using sphinx directives (Issue #3925, PR #4374)
 
 Enhancements
- * Added `precision` for XYZWriter (PR #4771)
  * Removed type and mass guessing from all topology parsers (PR #3753)
  * Added guess_TopologyAttrs() API to the Universe to handle attribute
    guessing (PR #3753)
