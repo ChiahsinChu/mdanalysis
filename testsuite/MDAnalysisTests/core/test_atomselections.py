@@ -1087,6 +1087,12 @@ class TestSelectionErrors(object):
         with pytest.raises(SelectionError, match="Expected one of"):
             universe.select_atoms("prop parsnip < 2")
 
+    def test_invalid_relprop_selection(self, universe):
+        with pytest.raises(SelectionError, match="Expected one of"):
+            universe.select_atoms("relprop parsnip < 2 index 0")
+        with pytest.raises(SelectionError, match="Unknown selection token"):
+            universe.select_atoms("relprop z < 2")
+
 
 def test_segid_and_resid():
     u = make_Universe(('segids', 'resids'))
