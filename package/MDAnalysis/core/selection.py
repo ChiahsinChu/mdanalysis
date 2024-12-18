@@ -1353,6 +1353,51 @@ class PropertySelection(Selection):
         return group[mask]
 
 
+class RelPropertySelection(PropertySelection):
+    """Some of the possible properties:
+    x, y, z,
+
+    .. versionadded:: 2.9.0
+    """
+
+    token = "relprop"
+    precedence = 1
+
+    def __init__(self, parser, tokens):
+        super().__init__(parser, tokens)
+        self.sel = parser.parse_expression(self.precedence)
+        # self.ori_value = self.value
+
+    def _apply(self, group):
+        try:
+            values = getattr(group, self.props[self.prop])
+        except KeyError:
+            errmsg = f"Expected one of {list(self.props.keys())}"
+            raise SelectionError(errmsg) from None
+        except NoDataError:
+            attr = self.props[self.prop]
+            errmsg = f"This Universe does not contain {attr} information"
+            raise SelectionError(errmsg) from None
+
+        try:
+            col = {"x": 0, "y": 1, "z": 2}[self.prop]
+        except KeyError:
+            pass
+        else:
+            values = values[:, col]
+            sel = self.sel.apply(group)
+            rel_value = (
+                sel.center_of_geometry().reshape(3).astype(np.float32)[col]
+            )
+            values -= rel_value
+
+        if self.absolute:
+            values = np.abs(values)
+        mask = self.operator(values, self.value)
+
+        return group[mask]
+
+
 class SameSelection(Selection):
     """
     Selects all atoms that have the same subkeyword value as any atom in selection
