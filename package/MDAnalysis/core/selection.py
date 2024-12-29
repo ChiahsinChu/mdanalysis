@@ -1366,7 +1366,7 @@ class RelPropertySelection(PropertySelection):
     def __init__(self, parser, tokens):
         super().__init__(parser, tokens)
         self.sel = parser.parse_expression(self.precedence)
-        # self.ori_value = self.value
+        self.periodic = parser.periodic
 
     def _apply(self, group):
         try:
@@ -1382,14 +1382,18 @@ class RelPropertySelection(PropertySelection):
         try:
             col = {"x": 0, "y": 1, "z": 2}[self.prop]
         except KeyError:
-            pass
+            errmsg = f"Expected one of x y z for property, got {self.prop}"
+            raise SelectionError(errmsg) from None
         else:
-            values = values[:, col]
             sel = self.sel.apply(group)
-            rel_value = (
-                sel.center_of_geometry().reshape(3).astype(np.float32)[col]
-            )
-            values -= rel_value
+            ref_value = sel.center_of_geometry().reshape(3).astype(np.float32)
+            box = group.dimensions if self.periodic else None
+            if box is not None:
+                values = distances.minimize_vectors(
+                    values - ref_value[None, :], box=box
+                )[:, col]
+            else:
+                values = values[:, col] - ref_value[col]
 
         if self.absolute:
             values = np.abs(values)

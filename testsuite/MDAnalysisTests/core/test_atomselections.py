@@ -1092,6 +1092,15 @@ class TestSelectionErrors(object):
             universe.select_atoms("relprop parsnip < 2 index 0")
         with pytest.raises(SelectionError, match="Unknown selection token"):
             universe.select_atoms("relprop z < 2")
+        with pytest.raises(SelectionError, match="Expected one of x y z for property"):
+            universe.select_atoms("relprop id < 2 index 0")
+        empty_universe = mda.Universe.empty(
+            6, 2, atom_resindex=[0, 0, 0, 1, 1, 1]
+        )
+        with pytest.raises(
+            SelectionError, match="This Universe does not contain"
+        ):
+            empty_universe.select_atoms("relprop z <= 1 index 0")
 
 
 def test_segid_and_resid():
